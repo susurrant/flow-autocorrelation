@@ -31,17 +31,9 @@ def get_weight_matrix(vectors, standardization=False):
     for i in range(n):
         if i % 1000 == 0:
             print(i)
-        for j in range(n):
-            if i == j:
-                w[i][j] = 0
-            elif i < j:
-                d_ij = get_distance(vectors[i], vectors[j])
-                if d_ij > 0:
-                    w[i][j] = 1 / d_ij
-                else:
-                    w[i][j] = 1
-            else:
-                w[i][j] = w[j][i]
+        for j in range(i+1, n):
+            d_ij = get_distance(vectors[i], vectors[j])
+            w[j][i] = w[i][j] = 1 / d_ij
 
     if standardization:
         row_sum = np.sum(w, axis=1).reshape((-1, 1))
@@ -105,7 +97,7 @@ def get_flows_from_file(filename, column_num, minSpeed = 2, maxSpeed = 150):
 
 
 if __name__ == '__main__':
-    #flows_co, flows_z = get_sim_flows()
-    flows_co, flows_z = get_flows_from_file('./data/sj_051316_1km.csv', 30)
+    flows_co, flows_z = get_sim_flows()
+    #flows_co, flows_z = get_flows_from_file('./data/sj_051316_1km.csv', 30)
     moran_i = flow_autocorrelation(flows_co, flows_z)
     print(moran_i)
