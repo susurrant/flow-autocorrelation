@@ -50,7 +50,7 @@ def get_weight_matrix(flows_ox, flows_oy, flows_dx, flows_dy, standardization=Fa
     [X, Y] = np.meshgrid(flows_dy, flows_dy)
     w += (X - Y) ** 2
     del X, Y
-    
+
     w = np.sqrt(w)
     w[np.where(w == 0)] = float('inf')
     w = 1/w
@@ -123,7 +123,7 @@ def get_flows_from_file(filename, column_num, minSpeed = 2, maxSpeed = 150):
 
 
 if __name__ == '__main__':
-    flows_ox, flows_oy, flows_dx, flows_dy, flows_z = get_sim_flows()
-    #flows_ox, flows_oy, flows_dx, flows_dy, flows_z = get_flows_from_file('./data/sj_051316_1km.csv', 30)
+    #flows_ox, flows_oy, flows_dx, flows_dy, flows_z = get_sim_flows()
+    flows_ox, flows_oy, flows_dx, flows_dy, flows_z = get_flows_from_file('./data/sj_051316_1km.csv', 30)
     moran_i = flow_autocorrelation(flows_ox, flows_oy, flows_dx, flows_dy, flows_z)
     print(moran_i)
