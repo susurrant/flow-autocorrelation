@@ -1,1 +1,1 @@
-# flow-autocorrelation
+# spatial-interaction-autocorrelation
