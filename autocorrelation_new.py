@@ -112,7 +112,7 @@ def get_flows_from_file(filename, column_num, minSpeed = 2, maxSpeed = 150):
 
 
 if __name__ == '__main__':
-    flows_ox, flows_oy, flows_dx, flows_dy, flows_z = get_sim_flows()
-    #flows_ox, flows_oy, flows_dx, flows_dy, flows_z = get_flows_from_file('./data/sj_051316_1km.csv', 30)
+    #flows_ox, flows_oy, flows_dx, flows_dy, flows_z = get_sim_flows()
+    flows_ox, flows_oy, flows_dx, flows_dy, flows_z = get_flows_from_file('./data/sj_051316_1km.csv', 30)
     moran_i = flow_autocorrelation(flows_ox, flows_oy, flows_dx, flows_dy, flows_z)
     print(moran_i)
