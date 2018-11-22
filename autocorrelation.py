@@ -24,10 +24,13 @@ def get_distance(v1, v2, method=0):
 
 
 # 计算权重矩阵（standardization参数表示是否对权重矩阵标准化）
-def get_weighted_matrix(vectors, standardization=False):
+def get_weight_matrix(vectors, standardization=False):
+    print('calculate weight matrix...')
     n = len(vectors)
     w = np.zeros((n, n), dtype=float)
     for i in range(n):
+        if i % 1000 == 0:
+            print(i)
         for j in range(n):
             if i == j:
                 w[i][j] = 0
@@ -49,18 +52,22 @@ def get_weighted_matrix(vectors, standardization=False):
 
 # 计算流的空间自相关指数
 def flow_autocorrelation(flows_co, flows_z, standardization=False):
+    print('a')
     n = len(flows_z)
-    w = get_weighted_matrix(flows_co)
+    w = get_weight_matrix(flows_co)
     dif_z = flows_z-np.average(flows_z)
 
     # 计算叉积之和
+    print('b')
     [X, Y] = np.meshgrid(dif_z, dif_z)
     sum1 = np.sum(X * Y * w)
 
     # 计算偏差值平方和
+    print('c')
     sum2 = np.sum(dif_z**2)
 
     # 计算权重聚合
+    print('d')
     s = np.sum(w)
 
     moran_i = n * sum1 / s / sum2
@@ -98,7 +105,7 @@ def get_flows_from_file(filename, column_num, minSpeed = 2, maxSpeed = 150):
 
 
 if __name__ == '__main__':
-    flows_co, flows_z = get_sim_flows()
-    #flows_co, flows_z = get_flows_from_file('./data/sj_051316_1km.csv', 30)
+    #flows_co, flows_z = get_sim_flows()
+    flows_co, flows_z = get_flows_from_file('./data/sj_051316_1km.csv', 30)
     moran_i = flow_autocorrelation(flows_co, flows_z)
     print(moran_i)
