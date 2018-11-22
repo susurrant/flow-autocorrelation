@@ -31,15 +31,26 @@ def get_distance(v1, v2, method=0):
 # 计算权重矩阵（standardization参数表示是否对权重矩阵标准化）
 def get_weight_matrix(flows_ox, flows_oy, flows_dx, flows_dy, standardization=False):
     print('calculate weight matrix...')
-    n = len(flows_ox)
+    print('ox')
     [X, Y] = np.meshgrid(flows_ox, flows_ox)
     w = (X - Y) ** 2
+    del X, Y
+
+    print('oy')
     [X, Y] = np.meshgrid(flows_oy, flows_oy)
     w += (X - Y) ** 2
+    del X, Y
+
+    print('dx')
     [X, Y] = np.meshgrid(flows_dx, flows_dx)
     w += (X - Y) ** 2
+    del X, Y
+
+    print('dx')
     [X, Y] = np.meshgrid(flows_dy, flows_dy)
     w += (X - Y) ** 2
+    del X, Y
+    
     w = np.sqrt(w)
     w[np.where(w == 0)] = float('inf')
     w = 1/w
