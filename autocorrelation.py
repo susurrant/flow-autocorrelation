@@ -63,7 +63,7 @@ def get_weight_matrix(vectors, standardization=False):
         i = int(task_allo[idx]*n)
         j = int(task_allo[idx+1]*n)
         print('process', idx, ':', i, j)
-        results.append(pool.apply_async(task, vectors[i:j, ...]))
+        results.append(pool.apply_async(task, (vectors[i:j, ...],)))
     pool.close()
     pool.join()
 
