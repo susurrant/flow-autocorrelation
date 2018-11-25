@@ -26,13 +26,13 @@ def get_distance(v1, v2, method=0):
     return distance
 
 
-def task(vectors):
+def task(vectors, i, j, n):
     print('start process', os.getpid())
     start_time = time.clock()
-    l, n = vectors.shape
+    l = j - i + 1
     w = np.zeros((l, n), dtype=float)
     for r in range(l):
-        for c in range(r+1, n):
+        for c in range(n):
             w[r, c] = np.sqrt(np.sum((vectors[r]-vectors[c])**2))
     print('process', os.getpid(), 'completed: ', '%.3f'%(time.clock() - start_time), 'secs.')
 
@@ -58,12 +58,12 @@ def get_weight_matrix(vectors, standardization=False):
     '''
     pool = Pool(processes=10)
     results = []
-    task_allo = [0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.35, 0.45, 0.6, 0.8, 1]
+    task_allo = [i*0.1 for i in range(11)]
     for idx in range(10):
         i = int(task_allo[idx]*n)
         j = int(task_allo[idx+1]*n)
         print('process', idx, ':', i, j)
-        results.append(pool.apply_async(task, (vectors[i:j, ...],)))
+        results.append(pool.apply_async(task, args=(vectors,i, j, n, )))
     pool.close()
     pool.join()
 
@@ -72,22 +72,22 @@ def get_weight_matrix(vectors, standardization=False):
 
 # 计算流的空间自相关指数
 def flow_autocorrelation(flows_co, flows_z, standardization=False):
-    print('a')
+    print('step a')
     n = len(flows_z)
     w = get_weight_matrix(flows_co)
     dif_z = flows_z-np.average(flows_z)
 
     # 计算叉积之和
-    print('b')
+    print('step b')
     [X, Y] = np.meshgrid(dif_z, dif_z)
     sum1 = np.sum(X * Y * w)
 
     # 计算偏差值平方和
-    print('c')
+    print('step c')
     sum2 = np.sum(dif_z**2)
 
     # 计算权重聚合
-    print('d')
+    print('step d')
     s = np.sum(w)
 
     moran_i = n * sum1 / s / sum2
