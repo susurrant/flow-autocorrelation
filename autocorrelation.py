@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-：
 
+import os
+import time
+from multiprocessing import Pool
 import numpy as np
 
 
@@ -23,10 +26,24 @@ def get_distance(v1, v2, method=0):
     return distance
 
 
+def task(vectors):
+    print('start process', os.getpid())
+    start_time = time.clock()
+    l, n = vectors.shape
+    w = np.zeros((l, n), dtype=float)
+    for r in range(l):
+        for c in range(r+1, n):
+            w[r, c] = np.sqrt(np.sum((vectors[r]-vectors[c])**2))
+    print('process', os.getpid(), 'completed: ', '%.3f'%(time.clock() - start_time), 'secs.')
+
+    return w
+
+
 # 计算权重矩阵（standardization参数表示是否对权重矩阵标准化）
 def get_weight_matrix(vectors, standardization=False):
     print('calculate weight matrix...')
     n = len(vectors)
+    '''
     w = np.zeros((n, n), dtype=float)
     for i in range(n):
         if i % 1000 == 0:
@@ -38,8 +55,19 @@ def get_weight_matrix(vectors, standardization=False):
     if standardization:
         row_sum = np.sum(w, axis=1).reshape((-1, 1))
         w /= row_sum
+    '''
+    pool = Pool(processes=10)
+    results = []
+    task_allo = [0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.35, 0.45, 0.6, 0.8, 1]
+    for idx in range(10):
+        i = int(task_allo[idx]*n)
+        j = int(task_allo[idx+1]*n)
+        print('process', idx, ':', i, j)
+        results.append(pool.apply_async(task, vectors[i:j, ...]))
+    pool.close()
+    pool.join()
 
-    return w
+    return np.vstack((res.get() for res in results))
 
 
 # 计算流的空间自相关指数
