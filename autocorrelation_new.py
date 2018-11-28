@@ -48,7 +48,7 @@ def get_weight_matrix(vectors, standardization=False):
     for i in range(n):
         if i % 1000 == 0:
             print(i)
-        w[i,:] = 1/np.sqrt(np.sum((vectors - vectors[i])**2, axis=1))
+        w[i] = 1/np.sqrt(np.sum((vectors - vectors[i])**2, axis=1))
         w[i, i] = 0
 
     if standardization:
