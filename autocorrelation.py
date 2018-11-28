@@ -42,7 +42,7 @@ def task(vectors, i, j, n):
 
 
 # 计算权重矩阵（standardization参数表示是否对权重矩阵标准化）
-def get_weight_matrix(vectors, standardization=False):
+def get_weight_matrix(vectors, num_of_process, standardization=False):
     print('calculate weight matrix...')
     n = len(vectors)
     '''
@@ -58,10 +58,10 @@ def get_weight_matrix(vectors, standardization=False):
         row_sum = np.sum(w, axis=1).reshape((-1, 1))
         w /= row_sum
     '''
-    pool = Pool(processes=5)
+    pool = Pool(processes=num_of_process)
     results = []
-    task_allo = [i*0.2 for i in range(11)]
-    for idx in range(10):
+    task_allo = [i/num_of_process for i in range(num_of_process+1)]
+    for idx in range(num_of_process):
         i = int(task_allo[idx] * n)
         j = int(task_allo[idx + 1] * n)
         print('process', idx, ':', i, j)
@@ -73,11 +73,11 @@ def get_weight_matrix(vectors, standardization=False):
 
 
 # 计算流的空间自相关指数
-def flow_autocorrelation(flows_co, flows_z, standardization=False):
+def flow_autocorrelation(flows_co, flows_z, num_of_process, standardization=False):
     n = len(flows_z)
 
     start_time = time.clock()
-    w = get_weight_matrix(flows_co)
+    w = get_weight_matrix(flows_co, num_of_process)
     print('compute the weighted matrix: ', '%.3f' % (time.clock() - start_time), 'secs.')
 
     # 计算叉积之和
@@ -138,5 +138,5 @@ if __name__ == '__main__':
     #flows_co, flows_z = get_sim_flows()
     flows_co, flows_z = get_flows_from_file('./data/sj_051316_1km.csv', 30)
     #print(len(flows_z))
-    moran_i = flow_autocorrelation(flows_co, flows_z)
+    moran_i = flow_autocorrelation(flows_co, flows_z, num_of_process=5)
     print(moran_i)
