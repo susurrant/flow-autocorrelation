@@ -49,9 +49,8 @@ def get_weight_matrix(vectors, standardization=False):
         start_time = time.clock()
         if i % 1000 == 0:
             print(i)
-        for j in range(i+1, n):
-            d_ij = np.sqrt(np.sum((vectors[i]-vectors[j])**2))
-            w[j][i] = w[i][j] = 1 / d_ij
+        w[i,:] = 1/np.sqrt(np.sum((vectors - vectors[i])**2, axis=1))
+        w[i, i] = 0
         print(i, ': ', '%.3f' % (time.clock() - start_time), 'secs.')
 
     if standardization:
@@ -118,6 +117,6 @@ def get_flows_from_file(filename, column_num, minSpeed = 2, maxSpeed = 150):
 if __name__ == '__main__':
     #flows_co, flows_z = get_sim_flows()
     flows_co, flows_z = get_flows_from_file('./data/sj_051316_1km.csv', 30)
-    #print(len(flows_z))
-    moran_i = flow_autocorrelation(flows_co, flows_z)
-    print(moran_i)
+    print(len(flows_z))
+    #moran_i = flow_autocorrelation(flows_co, flows_z)
+    #print(moran_i)
