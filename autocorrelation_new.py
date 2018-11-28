@@ -118,5 +118,5 @@ if __name__ == '__main__':
     #flows_co, flows_z = get_sim_flows()
     flows_co, flows_z = get_flows_from_file('./data/sj_051316_1km.csv', 30)
     print(len(flows_z))
-    #moran_i = flow_autocorrelation(flows_co, flows_z)
-    #print(moran_i)
+    moran_i = flow_autocorrelation(flows_co, flows_z)
+    print(moran_i)
