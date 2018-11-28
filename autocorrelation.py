@@ -4,7 +4,7 @@ import os
 import time
 from multiprocessing import Pool
 import numpy as np
-
+import time
 
 # 模拟流
 def get_sim_flows():
@@ -74,7 +74,9 @@ def get_weight_matrix(vectors, standardization=False):
 def flow_autocorrelation(flows_co, flows_z, standardization=False):
     print('step a')
     n = len(flows_z)
+    start_time = time.clock()
     w = get_weight_matrix(flows_co)
+    print('compute the weighted matrix: ', '%.3f' % (time.clock() - start_time), 'secs.')
     dif_z = flows_z-np.average(flows_z)
 
     # 计算叉积之和
