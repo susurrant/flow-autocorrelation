@@ -4,7 +4,6 @@ import os
 import time
 from multiprocessing import Pool
 import numpy as np
-import time
 
 # 模拟流
 def get_sim_flows():
@@ -27,14 +26,17 @@ def get_distance(v1, v2, method=0):
 
 
 def task(vectors, i, j, n):
-    print('start process', os.getpid())
+    pid = os.getpid()
+    print('start process', pid)
     start_time = time.clock()
     l = j - i + 1
     w = np.zeros((l, n), dtype=float)
     for r in range(l):
+        if r % 1000 == 0:
+            print('process', pid, r, '/', l)
         w[r] = 1 / np.sqrt(np.sum((vectors - vectors[r]) ** 2, axis=1))
         w[r, i+r] = 0
-    print('process', os.getpid(), 'completed: ', '%.3f'%(time.clock() - start_time), 'secs.')
+    print('process', pid, 'completed: ', '%.3f'%(time.clock() - start_time), 'secs.')
 
     return w
 
@@ -56,9 +58,9 @@ def get_weight_matrix(vectors, standardization=False):
         row_sum = np.sum(w, axis=1).reshape((-1, 1))
         w /= row_sum
     '''
-    pool = Pool(processes=10)
+    pool = Pool(processes=5)
     results = []
-    task_allo = [i*0.1 for i in range(11)]
+    task_allo = [i*0.2 for i in range(11)]
     for idx in range(10):
         i = int(task_allo[idx] * n)
         j = int(task_allo[idx + 1] * n)
@@ -72,17 +74,23 @@ def get_weight_matrix(vectors, standardization=False):
 
 # 计算流的空间自相关指数
 def flow_autocorrelation(flows_co, flows_z, standardization=False):
-    print('step a')
     n = len(flows_z)
+
     start_time = time.clock()
     w = get_weight_matrix(flows_co)
     print('compute the weighted matrix: ', '%.3f' % (time.clock() - start_time), 'secs.')
-    dif_z = flows_z-np.average(flows_z)
 
     # 计算叉积之和
-    print('step b')
-    [X, Y] = np.meshgrid(dif_z, dif_z)
-    sum1 = np.sum(X * Y * w)
+    start_time = time.clock()
+    dif_z = flows_z - np.average(flows_z)
+    #[X, Y] = np.meshgrid(dif_z, dif_z)
+    #sum1 = np.sum(X * Y * w)
+    sum1 = 0
+    for i in range(n):
+        if i % 2000 == 0:
+            print(i)
+        sum1 += np.sum(dif_z[i] * dif_z * w[i])
+    print('compute cross product: ', '%.3f' % (time.clock() - start_time), 'secs.')
 
     # 计算偏差值平方和
     print('step c')
