@@ -46,12 +46,10 @@ def get_weight_matrix(vectors, standardization=False):
 
     w = np.zeros((n, n), dtype=float)
     for i in range(n):
-        start_time = time.clock()
         if i % 1000 == 0:
             print(i)
         w[i,:] = 1/np.sqrt(np.sum((vectors - vectors[i])**2, axis=1))
         w[i, i] = 0
-        print(i, ': ', '%.3f' % (time.clock() - start_time), 'secs.')
 
     if standardization:
         row_sum = np.sum(w, axis=1).reshape((-1, 1))
