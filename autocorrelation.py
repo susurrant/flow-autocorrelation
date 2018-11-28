@@ -32,9 +32,9 @@ def task(vectors, i, j, n):
     l = j - i + 1
     w = np.zeros((l, n), dtype=float)
     for r in range(l):
-        if r % 1000 == 0:
-            print('process', pid, r, '/', l)
-        w[r] = 1 / np.sqrt(np.sum((vectors - vectors[r]) ** 2, axis=1))
+        if r % 2000 == 0:
+            print('process', pid, ':', r, '/', l)
+        w[r] = 1 / np.sqrt(np.sum((vectors - vectors[r+i]) ** 2, axis=1))
         w[r, i+r] = 0
     print('process', pid, 'completed: ', '%.3f'%(time.clock() - start_time), 'secs.')
 
@@ -64,7 +64,7 @@ def get_weight_matrix(vectors, num_of_process, standardization=False):
     for idx in range(num_of_process):
         i = int(task_allo[idx] * n)
         j = int(task_allo[idx + 1] * n)
-        print('process', idx, ':', i, j)
+        print('pid', idx, ':', 'start from', i, 'end in', j)
         results.append(pool.apply_async(task, args=(vectors,i, j, n, )))
     pool.close()
     pool.join()
