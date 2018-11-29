@@ -76,14 +76,15 @@ def get_flows_from_file(filename, column_num, minSpeed = 2, maxSpeed = 150):
 
 
 if __name__ == '__main__':
-    print('starting time :', datetime.datetime.now().strftime("%Y.%m.%d-%H:%M:%S"))
+    print('starting time: %s \n' % datetime.datetime.now().strftime("%Y.%m.%d-%H:%M:%S"))
+    s_time = time.time()
 
+    # 1. 读取流数据
     #flows_co, flows_z = get_sim_flows()
     flows_co, flows_z = get_flows_from_file('./data/sj_051316_1km.csv', column_num=30)
-
-    start_time = time.clock()
+    # 2. 计算自相关指数
     moran_i = flow_autocorrelation(flows_co, flows_z)
-    print('run time: %.3f secs.' % (time.clock() - start_time))
-    print('moran\'s I: ' , moran_i)
 
-    print('end time: ', datetime.datetime.now().strftime("%Y.%m.%d-%H:%M:%S"))
+    print('moran\'s I: ' , moran_i)
+    print('\nend time: ', datetime.datetime.now().strftime("%Y.%m.%d-%H:%M:%S"))
+    print('run time: %.3f secs.' % (time.time() - s_time))
