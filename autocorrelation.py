@@ -5,6 +5,9 @@ import numpy as np
 import datetime
 from tqdm import tqdm
 
+import warnings
+warnings.filterwarnings('ignore')
+
 # 模拟数据
 def get_sim_flows():
 
@@ -24,10 +27,9 @@ def get_distance(v1, v2, method=0):
     distance = np.sqrt(np.sum((v1-v2)**2))
     return distance
 
+
 # 计算流的空间自相关指数
 def flow_autocorrelation(flows_co, flows_z, standardization=False):
-    start_time = time.clock()
-
     n = len(flows_z)
     sum1 = 0
     sum_w = 0
@@ -39,8 +41,6 @@ def flow_autocorrelation(flows_co, flows_z, standardization=False):
         w[i] = 0
         sum1 += np.sum(dif_z[i] * dif_z * w)  # 计算叉积之和
         sum_w += np.sum(w)     # 计算权重聚合
-
-    print('run time: %.3f secs.' % (time.clock() - start_time))
 
     return n * sum1 / sum_w / sum2
 
@@ -76,10 +76,14 @@ def get_flows_from_file(filename, column_num, minSpeed = 2, maxSpeed = 150):
 
 
 if __name__ == '__main__':
-    print('starting time: \n', datetime.datetime.now().strftime("%Y.%m.%d-%H:%M:%S"))
+    print('starting time :', datetime.datetime.now().strftime("%Y.%m.%d-%H:%M:%S"))
 
     #flows_co, flows_z = get_sim_flows()
-    flows_co, flows_z = get_flows_from_file('./data/sj_051316_1km.csv', 30)
+    flows_co, flows_z = get_flows_from_file('./data/sj_051316_1km.csv', column_num=30)
+
+    start_time = time.clock()
     moran_i = flow_autocorrelation(flows_co, flows_z)
+    print('run time: %.3f secs.' % (time.clock() - start_time))
     print('moran\'s I: ' , moran_i)
-    print('end time: \n', datetime.datetime.now().strftime("%Y.%m.%d-%H:%M:%S"))
+
+    print('end time: ', datetime.datetime.now().strftime("%Y.%m.%d-%H:%M:%S"))
