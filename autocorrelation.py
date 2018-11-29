@@ -63,7 +63,7 @@ def get_weight_matrix(vectors, num_of_process, standardization=False):
     w = np.zeros((n, n), dtype=float)
     for i in range(n):
         if i % 2000 == 0:
-            print(i, '/', n, ' finished...')
+            print('  ', i, '/', n, ' finished...')
         w[i] = 1 / np.sqrt(np.sum((vectors - vectors[i]) ** 2, axis=1))
         w[i, i] = 0
 
@@ -75,15 +75,31 @@ def get_weight_matrix(vectors, num_of_process, standardization=False):
 
 
 # 计算流的空间自相关指数
-def flow_autocorrelation(flows_co, flows_z, num_of_process, standardization=False):
-    n = len(flows_z)
+def flow_autocorrelation(flows_co, flows_z, standardization=False):
+    start_time = time.clock()
 
-    #计算权重矩阵
+    n = len(flows_z)
+    sum1 = 0
+    sum_w = 0
+    dif_z = flows_z - np.average(flows_z)
+    sum2 = np.sum(dif_z ** 2)  # 计算偏差值平方和
+
+    for i in range(n):
+        if i % 2000 == 0:
+            print('  ', i, '/', n, ' finished...')
+        w = 1 / np.sqrt(np.sum((flows_co - flows_co[i]) ** 2, axis=1))  # 计算权重矩阵
+        w[i] = 0
+        sum1 += np.sum(dif_z[i] * dif_z * w)  # 计算叉积之和
+        sum_w += np.sum(w)     # 计算权重聚合
+    print('run time: ', '%.3f' % (time.clock() - start_time), 'secs.')
+    '''
+
+    
     start_time = time.clock()
     w = get_weight_matrix(flows_co, num_of_process)
     print('compute the weighted matrix: ', '%.3f' % (time.clock() - start_time), 'secs.')
 
-    # 计算叉积之和
+    
     start_time = time.clock()
     dif_z = flows_z - np.average(flows_z)
     #[X, Y] = np.meshgrid(dif_z, dif_z)
@@ -95,17 +111,16 @@ def flow_autocorrelation(flows_co, flows_z, num_of_process, standardization=Fals
         sum1 += np.sum(dif_z[i] * dif_z * w[i])
     print('compute cross product: ', '%.3f' % (time.clock() - start_time), 'secs.')
 
-    # 计算偏差值平方和
+    
     print('step c')
     sum2 = np.sum(dif_z**2)
 
-    # 计算权重聚合
+    
     print('step d')
     s = np.sum(w)
+    '''
 
-    moran_i = n * sum1 / s / sum2
-
-    return moran_i
+    return n * sum1 / sum_w / sum2
 
 
 def get_flows_from_file(filename, column_num, minSpeed = 2, maxSpeed = 150):
@@ -143,5 +158,5 @@ if __name__ == '__main__':
     #flows_co, flows_z = get_sim_flows()
     flows_co, flows_z = get_flows_from_file('./data/sj_051316_1km.csv', 30)
     #print(len(flows_z))
-    moran_i = flow_autocorrelation(flows_co, flows_z, num_of_process=5)
+    moran_i = flow_autocorrelation(flows_co, flows_z)
     print(moran_i)
