@@ -76,7 +76,7 @@ def get_flows_from_file(filename, column_num, minSpeed = 2, maxSpeed = 150):
 
 
 if __name__ == '__main__':
-    print('starting time: %s \n' % datetime.datetime.now().strftime("%Y.%m.%d-%H:%M:%S"))
+    print('start time: %s' % datetime.datetime.now().strftime("%Y.%m.%d-%H:%M:%S"))
     s_time = time.time()
 
     # 1. 读取流数据
